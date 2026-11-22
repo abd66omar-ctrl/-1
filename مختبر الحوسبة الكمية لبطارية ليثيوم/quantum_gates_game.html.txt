@@ -1,0 +1,1665 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<meta name="theme-color" content="#0F62FE">
+<title>تحدي البوابات الكمومية | مختبر محاكاة البطاريات الكمومية</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap');
+
+:root {
+  --bg: #F5F7FA;
+  --surface: #FFFFFF;
+  --surface-subtle: #EEF2F7;
+  --border: #D4DEE9;
+  --border-strong: #B8C6D8;
+  --text: #121619;
+  --muted: #4D5358;
+  --blue: #0F62FE;
+  --blue-dark: #0043CE;
+  --blue-tint: #EDF5FF;
+  --teal: #007D79;
+  --teal-tint: #E6F6F5;
+  --purple: #6929C4;
+  --purple-tint: #F4EEFF;
+  --magenta: #D02670;
+  --magenta-tint: #FFF0F7;
+  --amber: #8A6700;
+  --amber-tint: #FFF8E1;
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  touch-action: manipulation;
+}
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  padding-bottom: calc(36px + env(safe-area-inset-bottom));
+  overflow-x: hidden;
+}
+
+.mono {
+  font-family: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/* Flagged Coined Terms Styling (SQA Rubric Criterion 3) */
+.coined-term {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--purple-tint);
+  border-bottom: 1.5px dashed var(--purple);
+  padding: 0 6px;
+  border-radius: 5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.coined-flag {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--purple);
+  background: #FFFFFF;
+  border: 1px solid #D4C2F8;
+  padding: 0 5px;
+  border-radius: 4px;
+}
+
+.page-wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 14px;
+}
+
+/* 1. Sticky Lab Header */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  min-height: 52px;
+  padding: 7px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.station-chip {
+  background: var(--blue);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 9px;
+  padding: 7px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--surface-subtle);
+  border-color: var(--border-strong);
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--blue-dark);
+  border-color: var(--blue-dark);
+}
+
+.btn-hint {
+  background: var(--amber-tint);
+  border-color: #E5CD78;
+  color: #5C4400;
+}
+.btn-hint:hover:not(:disabled) { background: #FFF0BE; }
+
+.btn-mute.is-muted {
+  background: var(--magenta-tint);
+  border-color: #F2B5D0;
+  color: var(--magenta);
+}
+
+/* 2. Energy Sector Context Section (Rubric Criterion 4) */
+.energy-context {
+  margin-top: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-right: 5px solid var(--teal);
+  border-radius: var(--radius);
+  padding: 13px 16px;
+}
+
+.energy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+}
+
+.energy-header h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sector-tag {
+  background: var(--teal-tint);
+  color: var(--teal);
+  border: 1px solid #99D6D2;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+.energy-context p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+/* 3. Telemetry Strip */
+.telemetry-grid {
+  margin: 10px 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
+}
+
+.tele-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.tele-box .t-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.tele-box .t-val {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.t-score { border-top: 3px solid var(--blue); }
+.t-score .t-val { color: var(--blue); }
+
+.t-best { border-top: 3px solid #B28600; }
+.t-best .t-val { color: var(--amber); }
+
+.t-stage { border-top: 3px solid var(--purple); }
+.t-stage .t-val { color: var(--purple); }
+
+.t-streak { border-top: 3px solid var(--teal); }
+.t-streak .t-val { color: var(--teal); }
+
+.t-lives { border-top: 3px solid var(--magenta); }
+.t-lives .t-val { color: var(--magenta); }
+
+/* 4. Main Interactive Arena */
+.arena-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(18, 22, 25, 0.04);
+}
+
+.objective-strip {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 8px 12px;
+}
+
+.state-indicator {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.state-indicator.incoming {
+  background: var(--blue-tint);
+  border-color: #A6C8FF;
+}
+
+.state-indicator.player {
+  background: var(--teal-tint);
+  border-color: #8FD3CE;
+}
+
+.state-indicator .si-lbl {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.state-indicator .si-val {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.state-indicator.player .si-val {
+  color: var(--teal);
+}
+
+.stage-badge {
+  text-align: center;
+  background: var(--purple-tint);
+  border: 1px solid #D4C2F8;
+  color: var(--purple);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 9px;
+  line-height: 1.4;
+}
+
+.chem-link-bar {
+  margin-top: 9px;
+  background: var(--blue-tint);
+  border-right: 3px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  padding: 6px 11px;
+  font-size: 12.5px;
+  color: var(--text);
+}
+
+/* Desktop Grid: Wire Track + Controls on left, Bloch Sphere on right */
+.workspace-grid {
+  margin: 12px 0;
+  display: grid;
+  grid-template-columns: 1fr 245px;
+  grid-template-areas:
+    "track bloch"
+    "controls bloch";
+  gap: 12px;
+  align-items: stretch;
+}
+
+.wire-track {
+  grid-area: track;
+  direction: ltr;
+  position: relative;
+  min-height: 230px;
+  background: #FAFBFD;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  user-select: none;
+  cursor: pointer;
+}
+
+.controls-row {
+  grid-area: controls;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.bloch-box {
+  grid-area: bloch;
+  background: #FAFBFD;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.wire-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(90deg, transparent, transparent 48px, #E6ECF4 49px, transparent 50px);
+}
+
+.wire-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 54%;
+  height: 3px;
+  margin-top: -1.5px;
+  background: #9EB3CE;
+}
+
+.wire-caption {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  direction: rtl;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 6px;
+  z-index: 3;
+}
+
+.detector-tag {
+  position: absolute;
+  top: 9px;
+  left: 10px;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  direction: rtl;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--teal);
+  background: var(--teal-tint);
+  border: 1px solid #99D6D2;
+  padding: 2px 8px;
+  border-radius: 6px;
+  z-index: 3;
+}
+
+/* Player's Controlled Output Node */
+.qubit-node {
+  position: absolute;
+  left: 78px;
+  top: 54%;
+  transform: translate(-50%, -50%);
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 6;
+  border: 3px solid #fff;
+  transition: transform 0.14s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.qubit-node.state-0 {
+  background: var(--blue);
+  box-shadow: 0 6px 18px rgba(15, 98, 254, 0.28);
+  color: #fff;
+}
+
+.qubit-node.state-1 {
+  background: var(--magenta);
+  box-shadow: 0 6px 18px rgba(208, 38, 112, 0.28);
+  color: #fff;
+}
+
+.qubit-node:active {
+  transform: translate(-50%, -50%) scale(0.94);
+}
+
+.qubit-node .qn-num {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.qubit-node .qn-ket {
+  font-size: 11.5px;
+  opacity: 0.92;
+  margin-top: 2px;
+}
+
+.qubit-node .qn-sub {
+  font-size: 10px;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  margin-top: 2px;
+  opacity: 0.95;
+}
+
+/* Moving Gate Packet Carrying Input Bit */
+.gate-packet {
+  position: absolute;
+  top: 54%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  z-index: 5;
+}
+
+.gate-box {
+  min-width: 116px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 2.5px solid var(--blue);
+  box-shadow: 0 8px 20px rgba(18, 22, 25, 0.09);
+  text-align: center;
+}
+
+.gate-box.is-phase { border-color: var(--purple); }
+.gate-box.is-unitary { border-color: var(--teal); }
+
+.gate-box .gb-sym {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.gate-box .gb-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 2px;
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  direction: rtl;
+}
+
+.gate-box .gb-eq {
+  margin-top: 5px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--surface-subtle);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.input-pill {
+  padding: 6px 9px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(18, 22, 25, 0.12);
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  direction: rtl;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.input-pill.in-0 { background: var(--blue); }
+.input-pill.in-1 { background: var(--magenta); }
+
+.float-note {
+  position: absolute;
+  left: 78px;
+  top: 38px;
+  transform: translateX(-50%);
+  font-weight: 700;
+  font-size: 18px;
+  pointer-events: none;
+  z-index: 10;
+  animation: riseFade 0.85s ease-out forwards;
+}
+
+@keyframes riseFade {
+  0% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -26px); }
+}
+
+.wire-shake {
+  animation: shakeWire 0.32s ease;
+}
+
+@keyframes shakeWire {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+}
+
+/* Bloch Sphere Visual Figure */
+.bloch-box .bb-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+
+.bloch-box .bb-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+#blochArrow {
+  transition: transform 0.35s cubic-bezier(0.22, 1.2, 0.36, 1);
+  transform-origin: 72px 72px;
+}
+
+.prob-strip {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.p-chip {
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 7px;
+  color: var(--text);
+}
+
+/* Player 0 / 1 Toggle Controls */
+.state-btn {
+  min-height: 76px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  touch-action: manipulation;
+}
+
+.state-btn:hover { border-color: var(--border-strong); }
+.state-btn:active { transform: scale(0.97); }
+
+.state-btn.selected-0 {
+  background: var(--blue-tint);
+  border-color: var(--blue);
+  box-shadow: 0 3px 10px rgba(15, 98, 254, 0.12);
+}
+
+.state-btn.selected-1 {
+  background: var(--magenta-tint);
+  border-color: var(--magenta);
+  box-shadow: 0 3px 10px rgba(208, 38, 112, 0.12);
+}
+
+.state-btn .sb-top {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.state-btn .sb-digit {
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+
+.state-btn .sb-ket {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.state-btn.selected-0 .sb-digit,
+.state-btn.selected-0 .sb-ket { color: var(--blue); }
+
+.state-btn.selected-1 .sb-digit,
+.state-btn.selected-1 .sb-ket { color: var(--magenta); }
+
+.state-btn .sb-desc {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Tools & Feedback Strip */
+.tools-bar {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tools-buttons {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.status-message {
+  flex: 1;
+  min-width: 220px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.status-message.ok {
+  background: var(--teal-tint);
+  border-color: #8FD3CE;
+  color: var(--teal);
+}
+
+.status-message.err {
+  background: var(--magenta-tint);
+  border-color: #F2B5D0;
+  color: var(--magenta);
+}
+
+.hint-drawer {
+  margin-top: 9px;
+  background: var(--amber-tint);
+  border: 1px solid #E5CD78;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: #5C4400;
+}
+.hint-drawer.hidden { display: none; }
+
+/* Start & End Overlays */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(245, 247, 250, 0.97);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  z-index: 30;
+  overflow-y: auto;
+}
+.modal-overlay.hidden { display: none; }
+
+.modal-panel {
+  max-width: 560px;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 12px 30px rgba(18, 22, 25, 0.08);
+  text-align: center;
+  margin: auto;
+}
+
+.modal-panel h2 {
+  margin: 0 0 6px;
+  font-size: 19px;
+  color: var(--text);
+}
+
+.modal-panel p {
+  margin: 0 0 12px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.guide-steps {
+  text-align: right;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.guide-steps ol {
+  margin: 4px 0 0;
+  padding-right: 18px;
+}
+
+.guide-steps li {
+  margin-bottom: 4px;
+}
+
+.equation-box {
+  direction: ltr;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 8px 10px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--blue);
+  margin-bottom: 10px;
+}
+
+.physics-explanation {
+  background: var(--teal-tint);
+  border-right: 4px solid var(--teal);
+  border-radius: 0 9px 9px 0;
+  padding: 9px 12px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* 5. Scientific Scope & SQA Terminology Footer (Rubric Criteria 1 & 3) */
+.footer-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 12px;
+}
+
+.doc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.doc-card.scope-card {
+  border-right: 4px solid var(--purple);
+}
+
+.doc-card h3 {
+  margin: 0 0 7px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.doc-card ul {
+  margin: 0;
+  padding-right: 18px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.doc-card li {
+  margin-bottom: 5px;
+}
+
+.doc-card p {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.terms-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.term-badge {
+  font-size: 11.5px;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 8px;
+  color: var(--text);
+}
+
+.term-badge.flagged {
+  border-style: dashed;
+  border-color: var(--purple);
+  background: var(--purple-tint);
+}
+
+/* Tablet & Mobile Responsive Layout */
+@media (max-width: 820px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "track"
+      "controls"
+      "bloch";
+  }
+
+  .bloch-box {
+    flex-direction: row;
+    justify-content: space-around;
+    text-align: right;
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .bloch-info-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .prob-strip {
+    justify-content: flex-start;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .page-wrap { padding: 0 10px; }
+  .arena-card { padding: 12px; }
+
+  .topbar-inner {
+    padding: 6px 0;
+  }
+  .brand { font-size: 14px; }
+  .btn { padding: 6px 10px; font-size: 12px; }
+
+  /* Compact 5-item Telemetry Row for Mobile */
+  .telemetry-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin: 8px 0;
+  }
+  .tele-box {
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 4px;
+    text-align: center;
+  }
+  .tele-box .t-lbl { font-size: 10.5px; }
+  .tele-box .t-val { font-size: 14px; }
+
+  /* Compact 2-column + full-width badge Objective Strip */
+  .objective-strip {
+    grid-template-columns: 1fr 1fr;
+    padding: 7px 9px;
+    gap: 6px;
+  }
+  .stage-badge {
+    grid-column: 1 / -1;
+    order: -1;
+    padding: 4px 8px;
+    font-size: 11.5px;
+  }
+  .state-indicator {
+    padding: 6px 8px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+  }
+  .state-indicator .si-lbl { font-size: 11px; }
+  .state-indicator .si-val { font-size: 16px; }
+
+  /* Mobile Quantum Track & Compact Gate Packet */
+  .wire-track {
+    min-height: 190px;
+  }
+  .wire-line, .qubit-node, .gate-packet {
+    top: 56%;
+  }
+  .qubit-node {
+    left: 48px;
+    width: 68px;
+    height: 68px;
+  }
+  .qubit-node .qn-num { font-size: 22px; }
+  .qubit-node .qn-ket { font-size: 10.5px; }
+  .qubit-node .qn-sub { font-size: 9px; }
+
+  /* Stack input pill neatly above gate box on mobile so packet is narrow and has plenty of travel room */
+  .gate-packet {
+    flex-direction: column-reverse;
+    gap: 4px;
+  }
+  .gate-box {
+    min-width: 92px;
+    padding: 6px 8px;
+    border-radius: 10px;
+  }
+  .gate-box .gb-sym { font-size: 18px; }
+  .gate-box .gb-name { font-size: 10px; }
+  .gate-box .gb-eq { font-size: 10.5px; margin-top: 3px; padding: 1px 5px; }
+
+  .input-pill {
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 7px;
+  }
+  .input-pill br { display: none; }
+  .input-pill span { margin-right: 4px; }
+
+  .float-note { left: 48px; top: 28px; font-size: 15px; }
+
+  /* Thumb-friendly 0 / 1 Buttons */
+  .state-btn {
+    min-height: 70px;
+    padding: 8px;
+  }
+  .state-btn .sb-digit { font-size: 24px; }
+  .state-btn .sb-ket { font-size: 14px; }
+  .state-btn .sb-desc { font-size: 11px; }
+
+  /* Compact Bloch Sphere Strip on Mobile */
+  .bloch-box svg {
+    width: 112px;
+    height: 112px;
+    flex-shrink: 0;
+  }
+
+  .tools-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tools-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="page-wrap topbar-inner">
+    <div class="brand">
+      <span class="station-chip">مختبر البطاريات</span>
+      <span>تحدي البوابات (<span class="mono">0 / 1</span>)</span>
+    </div>
+    <div class="nav-controls">
+      <button type="button" id="speedBtn" class="btn">السرعة: هادئة</button>
+      <button type="button" id="muteBtn" class="btn btn-mute">كتم الصوت</button>
+      <a href="Quantum_Battery_Lab.html" class="btn">صفحة المختبر</a>
+    </div>
+  </div>
+</header>
+
+<main class="page-wrap">
+  <!-- Section 1: Saudi Energy Sector Context -->
+  <section class="energy-context" aria-label="سياق قطاع الطاقة السعودي">
+    <div class="energy-header">
+      <h1>دور البوابات الكمومية في تطوير بطاريات تخزين الطاقة بالمملكة</h1>
+      <span class="sector-tag">قطاع الطاقة · رؤية السعودية ٢٠٣٠</span>
+    </div>
+    <p>
+      يمثّل تطوير أنظمة <strong>تخزين الطاقة بالبطاريات</strong> ركيزة أساسية لدمج مشاريع الطاقة الشمسية وطاقة الرياح في الشبكة الكهربائية السعودية ضمن مستهدفات <strong>رؤية السعودية ٢٠٣٠</strong>. ولتحسين كفاءة مواد الأقطاب في البطاريات، تستخدم خوارزمية <strong>محلّل القيم الذاتية الكمومي التغايري (VQE)</strong> سلسلة من <strong>البوابات الكمومية</strong> لتحويل حالات الكيوبت (<span class="mono">|0⟩</span> و<span class="mono">|1⟩</span>) وتمثيل التوزيع الإلكتروني للجزيئات (مثل تحضير <span class="coined-term"><span class="coined-flag">مُعرّب</span> حالة هارتري-فوك (Hartree-Fock state)</span> في نموذج <span class="mono">LiH</span>) قبل قياس طاقة الترابط.
+    </p>
+  </section>
+
+  <!-- Section 2: Telemetry Strip -->
+  <section class="telemetry-grid" aria-label="مؤشرات النتيجة">
+    <div class="tele-box t-score"><span class="t-lbl">النقاط</span><span class="t-val mono" id="scoreVal">0</span></div>
+    <div class="tele-box t-best"><span class="t-lbl">الأعلى</span><span class="t-val mono" id="bestVal">0</span></div>
+    <div class="tele-box t-stage"><span class="t-lbl">المستوى</span><span class="t-val mono" id="stageVal">1</span></div>
+    <div class="tele-box t-streak"><span class="t-lbl">التتابع</span><span class="t-val mono" id="streakVal">0</span></div>
+    <div class="tele-box t-lives"><span class="t-lbl">المحاولات</span><span class="t-val mono" id="livesVal">3/3</span></div>
+  </section>
+
+  <!-- Section 3: Main Interactive Arena -->
+  <section class="arena-card" aria-label="مسار البوابات الكمومية">
+    <div class="objective-strip">
+      <div class="state-indicator incoming">
+        <span class="si-lbl">الرقم الداخل إلى البوابة</span>
+        <span class="si-val mono" id="incomingDisplay">0 (|0⟩)</span>
+      </div>
+      <div class="stage-badge" id="stageBadge">المستوى ١ · البوابات الأساسية · بوابات X و I</div>
+      <div class="state-indicator player">
+        <span class="si-lbl">اختيارك للمخرج الناتج</span>
+        <span class="si-val mono" id="playerDisplay">0 (|0⟩)</span>
+      </div>
+    </div>
+
+    <div class="chem-link-bar" id="chemLinkBar">
+      <strong>التطبيق في محاكاة البطارية:</strong> تُستخدم بوابة القلب <span class="mono">X</span> لتحويل المدار الفارغ <span class="mono">|0⟩</span> إلى مدار مشغول بإلكترون <span class="mono">|1⟩</span> عند بناء الحالة الابتدائية للبطارية.
+    </div>
+
+    <div class="workspace-grid">
+      <!-- Quantum Wire Track -->
+      <div class="wire-track" id="wireTrack" title="اضغط في أي مكان على المسار للتبديل بين 0 و 1">
+        <div class="wire-grid-bg"></div>
+        <div class="wire-line"></div>
+        <div class="detector-tag">مخرجك المختار</div>
+        <div class="wire-caption">البوابة تتجه نحو مخرجك ←</div>
+
+        <!-- Player's Controlled Output Node -->
+        <div class="qubit-node state-0" id="qubitNode">
+          <span class="qn-num mono" id="orbNum">0</span>
+          <span class="qn-ket mono" id="orbKet">|0⟩</span>
+          <span class="qn-sub">اضغط للتبديل</span>
+        </div>
+
+        <!-- Moving Gate Packet (Gate + Input State entering it) -->
+        <div class="gate-packet" id="gatePacket" style="left:80%">
+          <div class="gate-box" id="gateBox">
+            <div class="gb-sym mono" id="gateSym">X</div>
+            <div class="gb-name" id="gateName">بوابة القلب (NOT)</div>
+            <div class="gb-eq mono" id="gateEq">X|0⟩ = ?</div>
+          </div>
+          <div class="input-pill in-0" id="inputPill">
+            المدخل<br><span class="mono" id="inPillVal">0 (|0⟩)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Player Controls: 0 or 1 -->
+      <div class="controls-row" aria-label="التحكم بالصفر والواحد">
+        <button type="button" class="state-btn selected-0" id="btn0">
+          <span class="sb-top"><span class="sb-digit mono">0</span><span class="sb-ket mono">(|0⟩)</span></span>
+          <span class="sb-desc">اضغط لاختيار <strong>0</strong></span>
+        </button>
+        <button type="button" class="state-btn" id="btn1">
+          <span class="sb-top"><span class="sb-digit mono">1</span><span class="sb-ket mono">(|1⟩)</span></span>
+          <span class="sb-desc">اضغط لاختيار <strong>1</strong></span>
+        </button>
+      </div>
+
+      <!-- Bloch Sphere Visual Figure -->
+      <div class="bloch-box">
+        <svg width="144" height="144" viewBox="0 0 144 144" role="img" aria-label="رسم توضيحي لكرة بلوخ يوضح اتجاه متجه الحالة الكمومية">
+          <circle cx="72" cy="72" r="54" fill="#F0F5FF" stroke="#B6C6DC" stroke-width="1.5"/>
+          <ellipse cx="72" cy="72" rx="54" ry="16" fill="none" stroke="#9EB0CC" stroke-dasharray="3 3" stroke-width="1.2"/>
+          <line x1="72" y1="18" x2="72" y2="126" stroke="#C5D3E6" stroke-width="1.2"/>
+          <line x1="18" y1="72" x2="126" y2="72" stroke="#C5D3E6" stroke-width="1.2"/>
+          <text x="72" y="13" fill="#0F62FE" font-size="11.5" font-weight="700" text-anchor="middle">|0⟩ (0)</text>
+          <text x="72" y="139" fill="#D02670" font-size="11.5" font-weight="700" text-anchor="middle">|1⟩ (1)</text>
+          <text x="134" y="76" fill="#007D79" font-size="11" font-weight="700" text-anchor="middle">|+⟩</text>
+          <text x="10" y="76" fill="#6929C4" font-size="11" font-weight="700" text-anchor="middle">|-⟩</text>
+          <g id="blochArrow">
+            <line x1="72" y1="72" x2="72" y2="25" stroke="#121619" stroke-width="3" stroke-linecap="round"/>
+            <polygon points="72,18 67,29 77,29" fill="#121619"/>
+          </g>
+        </svg>
+        <div class="bloch-info-col">
+          <div class="bb-title"><span class="coined-term"><span class="coined-flag">مُعرّب</span> كرة بلوخ (Bloch sphere)</span></div>
+          <div class="bb-sub" id="blochCaption">تمثيل الحالة الناتجة على الكرة</div>
+          <div class="prob-strip mono">
+            <span class="p-chip" id="prob0">P(0)=100%</span>
+            <span class="p-chip" id="prob1">P(1)=0%</span>
+            <span class="p-chip" id="phaseChip">الطور: +</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tools & Result Feedback -->
+    <div class="tools-bar">
+      <div class="tools-buttons">
+        <button type="button" class="btn btn-hint" id="hintBtn">تلميح علمي</button>
+        <button type="button" class="btn" id="retryBtn">إعادة الجلسة</button>
+      </div>
+      <div class="status-message" id="statusMsg">
+        راقب الرقم الداخل إلى البوابة، ثم اختر <strong>0</strong> أو <strong>1</strong> (الناتج بعد عبور البوابة) قبل وصولها إليك.
+      </div>
+    </div>
+
+    <div class="hint-drawer hidden" id="hintDrawer"></div>
+
+    <!-- Clear Step-by-Step Start Overlay -->
+    <div class="modal-overlay" id="startOverlay">
+      <div class="modal-panel">
+        <h2>تحدي البوابات الكمومية (<span class="mono">0 / 1</span>)</h2>
+        <p>اختبر فهمك لتأثير البوابات الكمومية وحقق أعلى مجموع نقاط ممكن:</p>
+        <div class="guide-steps">
+          <strong>طريقة اللعب في ثلاث خطوات واضحة:</strong>
+          <ol>
+            <li>تتحرك نحو مخرجك بوابة كمومية ومعها <strong>رقم مدخل</strong> (<span class="mono">0</span> أو <span class="mono">1</span>).</li>
+            <li>احسب ذهنياً ماذا سيصبح هذا الرقم بعد مروره من البوابة، ثم اضبط مخرجك على <strong>0</strong> أو <strong>1</strong> قبل وصول البوابة.</li>
+            <li>كل إجابة صحيحة ترفع نقاطك وتزيد مضاعف التتابع لتحقيق أعلى نتيجة ممكنة.</li>
+          </ol>
+        </div>
+        <button type="button" class="btn btn-primary" id="startBtn" style="padding:11px 28px;font-size:15px">ابدأ التحدي الآن</button>
+      </div>
+    </div>
+
+    <!-- Game Over / Summary Overlay -->
+    <div class="modal-overlay hidden" id="endOverlay">
+      <div class="modal-panel">
+        <h2 id="ovTitle">انتهت الجلسة</h2>
+        <p id="ovSub"></p>
+        <div class="equation-box mono" id="ovFormula"></div>
+        <div class="physics-explanation" id="ovExplain"></div>
+        <div class="modal-actions" id="ovBtns"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Scientific Scope & SQA Terminology -->
+  <section class="footer-grid" aria-label="حدود النموذج والمصطلحات المعتمدة">
+    <div class="doc-card scope-card">
+      <h3>ما يوضحه هذا النموذج وما لا يوضحه (حدود المحاكاة)</h3>
+      <ul>
+        <li><strong>ما يوضحه النموذج:</strong> يوضح بدقة رياضية ناتج مرور الحالات الأساسية (<span class="mono">|0⟩</span> و<span class="mono">|1⟩</span>) عبر البوابات أحادية الكيوبت المحددة للحالات الأساسية (<span class="mono">X , I , Z , H·H , X·X</span>)، بما في ذلك انقلاب الطور النسبي إلى <span class="mono">-|1⟩</span> عند تطبيق بوابة <span class="mono">Z</span> مع بقاء نتيجة القياس مساوية لـ <span class="mono">1</span>.</li>
+        <li><strong>ما لا يوضحه النموذج:</strong> لا يمثل حالة <strong>التراكب</strong> المتساوية التي تنتجها بوابة هادامارد المفردة (<span class="mono">H|0⟩ = |+⟩</span> باحتمال 50% لكل من 0 و1)، كما لا يحاكي بوابات <strong>التشابك</strong> متعددة الكيوبتات أو الحساب الكامل لطاقة أقطاب البطاريات (<span class="mono">LiH</span> أو <span class="mono">LiCoO₂</span>) داخل خوارزمية VQE.</li>
+      </ul>
+    </div>
+
+    <div class="doc-card">
+      <h3>المصطلحات المعتمدة (وفق قاموس القرية الكمومية / SQA)</h3>
+      <p>تُستخدم المصطلحات المعتمدة باتساق، وتُميَّز المصطلحات المُعرّبة بوسم <span class="coined-flag">مُعرّب</span> وإطار متقطع:</p>
+      <div class="terms-wrap">
+        <span class="term-badge">كيوبت</span>
+        <span class="term-badge">البوابة الكمومية</span>
+        <span class="term-badge">الدائرة الكمومية</span>
+        <span class="term-badge">التراكب</span>
+        <span class="term-badge">الطور</span>
+        <span class="term-badge">التشابك</span>
+        <span class="term-badge">بوابة هادامارد</span>
+        <span class="term-badge flagged">بوابة الهوية (Identity gate) · مُعرّب</span>
+        <span class="term-badge flagged">كرة بلوخ (Bloch sphere) · مُعرّب</span>
+        <span class="term-badge flagged">حالة هارتري-فوك (Hartree-Fock state) · مُعرّب</span>
+        <span class="term-badge flagged">الافتراض المبدئي (ansatz) · مُعرّب</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+'use strict';
+const el = id => document.getElementById(id);
+
+const GATES = {
+  X: {
+    sym: 'X',
+    name: 'بوابة القلب (NOT)',
+    kind: 'basic',
+    applyBit: b => (b === 0 ? 1 : 0),
+    applyKet: b => (b === 0 ? '|1⟩' : '|0⟩'),
+    chemNote: 'تُستخدم بوابة القلب X لقلب حالة الكيوبت من |0⟩ إلى |1⟩ لتمثيل مدار إلكتروني مشغول في حالة هارتري-فوك للبطارية.',
+    hint: 'بوابة X تعكس الرقم الداخل: الصفر (0) يصبح واحداً (1)، والواحد (1) يصبح صفراً (0).',
+    why: 'بوابة X تقلب حالة الكيوبت: X|0⟩ = |1⟩ (1) و X|1⟩ = |0⟩ (0).'
+  },
+  I: {
+    sym: 'I',
+    name: 'بوابة الهوية (Identity)',
+    kind: 'basic',
+    applyBit: b => b,
+    applyKet: b => (b === 0 ? '|0⟩' : '|1⟩'),
+    chemNote: 'تُبقي بوابة الهوية I حالة المدار الإلكتروني كما هي دون تغيير قبل الانتقال للخطوة التالية في الدائرة الكمومية.',
+    hint: 'بوابة الهوية I لا تغيّر الرقم الداخل: 0 يبقى 0، و 1 يبقى 1.',
+    why: 'بوابة الهوية I تحافظ على حالة الكيوبت كما هي: I|0⟩ = |0⟩ (0) و I|1⟩ = |1⟩ (1).'
+  },
+  Z: {
+    sym: 'Z',
+    name: 'بوابة الطور (Phase)',
+    kind: 'phase',
+    applyBit: b => b,
+    applyKet: b => (b === 0 ? '|0⟩' : '-|1⟩'),
+    chemNote: 'في حدود مؤثر هاملتون للبطارية، تغيّر بوابة Z إشارة الطور للحالة |1⟩ إلى -|1⟩ بينما تبقى قيمة القياس الأساسية 1.',
+    hint: 'بوابة Z تُبقي قيمة القياس 0 كما هي 0، وتُبقي قيمة القياس 1 كما هي 1 (مع قلب إشارة الطور إلى -|1⟩).',
+    why: 'بوابة Z تغيّر الطور النسبي للحالة |1⟩ ليصبح -|1⟩ دون تغيير قيمة البت المقاس (يبقى 1 باحتمال 100%).'
+  },
+  HH: {
+    sym: 'H·H',
+    name: 'هادامارد المزدوجة (H² = I)',
+    kind: 'unitary',
+    applyBit: b => b,
+    applyKet: b => (b === 0 ? '|0⟩' : '|1⟩'),
+    chemNote: 'تطبيق بوابة هادامارد مرتين متتاليتين (H ثم H) يزيل التراكب ويعيد الكيوبت إلى حالته الأصلية لأن H² = I.',
+    hint: 'البوابة الأولى H تضع الكيوبت في تراكب، والبوابة الثانية H تعيده إلى رقمه الأصلي تماماً (H² = I).',
+    why: 'تطبيق بوابة هادامارد مرتين يعيد الحالة الأصلية: H·H|0⟩ = |0⟩ (0) و H·H|1⟩ = |1⟩ (1).'
+  },
+  XX: {
+    sym: 'X·X',
+    name: 'القلب المزدوج (X² = I)',
+    kind: 'unitary',
+    applyBit: b => b,
+    applyKet: b => (b === 0 ? '|0⟩' : '|1⟩'),
+    chemNote: 'جميع البوابات الكمومية عمليات عكوسة؛ وتطبيق بوابة القلب X مرتين يعيد الكيوبت إلى قيمته الأصلية.',
+    hint: 'قلب الرقم مرتين متتاليتين يعيده إلى قيمته الأصلية لأن X² = I.',
+    why: 'تطبيق بوابة X مرتين يعيد الحالة الابتدائية: X·X|0⟩ = |0⟩ (0) و X·X|1⟩ = |1⟩ (1).'
+  },
+  ZX: {
+    sym: 'Z·X',
+    name: 'قلب ثم طور (X ثم Z)',
+    kind: 'phase',
+    applyBit: b => (b === 0 ? 1 : 0),
+    applyKet: b => (b === 0 ? '-|1⟩' : '|0⟩'),
+    chemNote: 'يمثل تركيب البوابات المتتالية جوهر بناء الدوائر الكمومية في خوارزمية VQE لمحاكاة التفاعلات الإلكترونية.',
+    hint: 'تُطبّق بوابة X أولاً فتقلب الرقم (0 يصبح 1، و1 يصبح 0)، ثم بوابة Z تضبط الطور دون تغيير الرقم.',
+    why: 'بوابة X تقلب الرقم أولاً، ثم تحافظ بوابة Z على قيمة القياس الناتجة مع ضبط الطور.'
+  }
+};
+
+const LEVELS = [
+  { name: 'المستوى ١ · البوابات الأساسية', desc: 'بوابات X و I', pool: ['X', 'I'], travelSec: 4.4 },
+  { name: 'المستوى ٢ · إضافة الطور', desc: 'بوابات X و I و Z', pool: ['X', 'I', 'Z'], travelSec: 3.8 },
+  { name: 'المستوى ٣ · البوابات العكوسة', desc: 'إضافة H·H و X·X', pool: ['X', 'Z', 'HH', 'XX'], travelSec: 3.3 },
+  { name: 'المستوى ٤ · التركيب المتقدم', desc: 'جميع البوابات', pool: ['X', 'I', 'Z', 'HH', 'XX', 'ZX'], travelSec: 2.8 }
+];
+
+let playerBit = 0;
+let score = 0;
+function loadBestScore() {
+  try {
+    return Number(window.localStorage.getItem('qff_gate_runner_best') || 0);
+  } catch (_) {
+    return 0;
+  }
+}
+function saveBestScore(val) {
+  try {
+    window.localStorage.setItem('qff_gate_runner_best', String(val));
+  } catch (_) {}
+}
+let bestScore = loadBestScore();
+let levelNum = 1;
+let hitsCount = 0;
+let streak = 0;
+let lives = 3;
+
+let running = false;
+let pausedForHint = false;
+let muted = false;
+let speedStep = 0; // 0: هادئة, 1: متوسطة, 2: سريعة
+const SPEED_LABELS = ['السرعة: هادئة', 'السرعة: متوسطة', 'السرعة: سريعة'];
+const SPEED_MULTS = [1.0, 1.35, 1.75];
+
+let currentRound = null;
+let gateX = 0;
+let lastTime = 0;
+let rafId = null;
+
+el('bestVal').textContent = bestScore;
+
+// Subtle Web Audio cues
+let audioCtx = null;
+function playCue(type) {
+  if (muted) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    const t = audioCtx.currentTime;
+    if (type === 'switch') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(500, t);
+      gain.gain.setValueAtTime(0.04, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+      osc.start(t); osc.stop(t + 0.05);
+    } else if (type === 'ok') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(587.33, t);
+      osc.frequency.setValueAtTime(880, t + 0.08);
+      gain.gain.setValueAtTime(0.08, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+      osc.start(t); osc.stop(t + 0.22);
+    } else {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, t);
+      osc.frequency.linearRampToValueAtTime(140, t + 0.22);
+      gain.gain.setValueAtTime(0.08, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.24);
+      osc.start(t); osc.stop(t + 0.24);
+    }
+  } catch (_) {}
+}
+
+el('muteBtn').addEventListener('click', () => {
+  muted = !muted;
+  el('muteBtn').textContent = muted ? 'تشغيل الصوت' : 'كتم الصوت';
+  el('muteBtn').classList.toggle('is-muted', muted);
+});
+
+el('speedBtn').addEventListener('click', () => {
+  speedStep = (speedStep + 1) % SPEED_LABELS.length;
+  el('speedBtn').textContent = SPEED_LABELS[speedStep];
+});
+
+function updateBloch(ketStr, caption) {
+  let deg = 0;
+  let p0 = '100%';
+  let p1 = '0%';
+  let phase = '+';
+
+  if (ketStr === '|0⟩') {
+    deg = 0; p0 = '100%'; p1 = '0%'; phase = '+';
+  } else if (ketStr === '|1⟩') {
+    deg = 180; p0 = '0%'; p1 = '100%'; phase = '+';
+  } else if (ketStr === '-|1⟩') {
+    deg = 180; p0 = '0%'; p1 = '100%'; phase = '- (سالب)';
+  }
+
+  el('blochArrow').style.transform = `rotate(${deg}deg)`;
+  el('prob0').textContent = `P(0)=${p0}`;
+  el('prob1').textContent = `P(1)=${p1}`;
+  el('phaseChip').textContent = `الطور: ${phase}`;
+  if (caption) el('blochCaption').textContent = caption;
+}
+
+function setPlayerBit(val) {
+  playerBit = val === 1 ? 1 : 0;
+  const node = el('qubitNode');
+  node.classList.toggle('state-0', playerBit === 0);
+  node.classList.toggle('state-1', playerBit === 1);
+
+  el('orbNum').textContent = String(playerBit);
+  el('orbKet').textContent = `|${playerBit}⟩`;
+  el('playerDisplay').textContent = `${playerBit} (|${playerBit}⟩)`;
+
+  el('btn0').classList.toggle('selected-0', playerBit === 0);
+  el('btn1').classList.toggle('selected-1', playerBit === 1);
+
+  if (running && !pausedForHint) playCue('switch');
+}
+
+el('btn0').addEventListener('click', () => setPlayerBit(0));
+el('btn1').addEventListener('click', () => setPlayerBit(1));
+el('wireTrack').addEventListener('click', () => {
+  if (running && !pausedForHint) setPlayerBit(1 - playerBit);
+});
+
+window.addEventListener('keydown', e => {
+  if (e.key === '0' || e.key === 'ArrowLeft') setPlayerBit(0);
+  else if (e.key === '1' || e.key === 'ArrowRight') setPlayerBit(1);
+  else if (e.key === ' ') {
+    e.preventDefault();
+    if (running && !pausedForHint) setPlayerBit(1 - playerBit);
+  }
+});
+
+function getLevelConfig() {
+  const idx = Math.min(LEVELS.length - 1, Math.floor(hitsCount / 4));
+  levelNum = idx + 1;
+  const base = LEVELS[idx];
+  const minTravel = Math.max(1.85, base.travelSec - Math.max(0, hitsCount - 12) * 0.06);
+  return { ...base, travelSec: minTravel };
+}
+
+function updateTelemetry() {
+  el('scoreVal').textContent = score;
+  el('bestVal').textContent = bestScore;
+  el('stageVal').textContent = levelNum;
+  el('streakVal').textContent = streak;
+  el('livesVal').textContent = `${lives}/3`;
+}
+
+function showFloatingText(text, color) {
+  const note = document.createElement('div');
+  note.className = 'float-note mono';
+  note.style.color = color;
+  note.textContent = text;
+  el('wireTrack').appendChild(note);
+  setTimeout(() => note.remove(), 850);
+}
+
+/* Compute exact responsive track boundaries so mobile and desktop both get fair travel distance */
+function getTrackGeometry() {
+  const track = el('wireTrack');
+  const qubit = el('qubitNode');
+  const packet = el('gatePacket');
+
+  const trackW = track.clientWidth || 320;
+  const qubitCenter = qubit.offsetLeft || 48;
+  const qubitHalfW = (qubit.offsetWidth || 68) / 2;
+  const packetHalfW = (packet.offsetWidth || 96) / 2;
+
+  const startX = Math.max(qubitCenter + qubitHalfW + packetHalfW + 40, trackW - packetHalfW - 10);
+  const collideX = qubitCenter + qubitHalfW + packetHalfW - 6;
+  const travelDist = Math.max(70, startX - collideX);
+
+  return { startX, collideX, travelDist };
+}
+
+function spawnNextGate() {
+  const cfg = getLevelConfig();
+  updateTelemetry();
+
+  const key = cfg.pool[Math.floor(Math.random() * cfg.pool.length)];
+  const def = GATES[key];
+  const inputBit = Math.round(Math.random());
+  const expectedBit = def.applyBit(inputBit);
+  const expectedKet = def.applyKet(inputBit);
+
+  currentRound = { key, def, inputBit, expectedBit, expectedKet };
+
+  const box = el('gateBox');
+  box.classList.toggle('is-phase', def.kind === 'phase');
+  box.classList.toggle('is-unitary', def.kind === 'unitary');
+
+  el('gateSym').textContent = def.sym;
+  el('gateName').textContent = def.name;
+  el('gateEq').textContent = `${def.sym}|${inputBit}⟩ = ?`;
+
+  const pill = el('inputPill');
+  pill.className = `input-pill ${inputBit === 0 ? 'in-0' : 'in-1'}`;
+  el('inPillVal').textContent = `${inputBit} (|${inputBit}⟩)`;
+
+  el('incomingDisplay').textContent = `${inputBit} (|${inputBit}⟩)`;
+  el('stageBadge').textContent = `${cfg.name} · ${cfg.desc}`;
+  el('chemLinkBar').innerHTML = `<strong>التطبيق في محاكاة البطارية:</strong> ${def.chemNote}`;
+
+  const geo = getTrackGeometry();
+  gateX = geo.startX;
+  el('gatePacket').style.left = `${gateX}px`;
+
+  el('hintDrawer').classList.add('hidden');
+  pausedForHint = false;
+}
+
+function showEndModal(title, sub, formula, explain) {
+  running = false;
+  if (rafId) cancelAnimationFrame(rafId);
+  el('ovTitle').textContent = title;
+  el('ovSub').innerHTML = sub;
+  el('ovFormula').textContent = formula;
+  el('ovExplain').textContent = explain;
+
+  const box = el('ovBtns');
+  box.replaceChildren();
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn btn-primary';
+  btn.style.padding = '10px 22px';
+  btn.textContent = 'العب مرة أخرى لتحطيم الرقم القياسي';
+  btn.addEventListener('click', startNewGame);
+  box.appendChild(btn);
+
+  el('endOverlay').classList.remove('hidden');
+}
+
+function handleGateArrival() {
+  const { def, inputBit, expectedBit, expectedKet } = currentRound;
+  const formulaStr = `${def.sym}|${inputBit}⟩ = ${expectedKet}  ←  الناتج: ${expectedBit}`;
+  const msg = el('statusMsg');
+
+  updateBloch(expectedKet, `نتيجة مرور |${inputBit}⟩ عبر ${def.sym}: ${expectedKet}`);
+
+  if (playerBit === expectedBit) {
+    playCue('ok');
+    hitsCount += 1;
+    streak += 1;
+    const mult = Math.min(4, 1 + Math.floor(streak / 3));
+    const gained = 10 * mult;
+    score += gained;
+
+    if (score > bestScore) {
+      bestScore = score;
+      saveBestScore(bestScore);
+    }
+
+    msg.className = 'status-message ok';
+    msg.innerHTML = `صحيح! <span class="mono" style="margin:0 5px">${formulaStr}</span> (+${gained} نقطة${mult > 1 ? ` · مضاعف ×${mult}` : ''})`;
+    showFloatingText(`+${gained}`, '#007D79');
+    spawnNextGate();
+  } else {
+    playCue('err');
+    streak = 0;
+    lives -= 1;
+    updateTelemetry();
+
+    msg.className = 'status-message err';
+    msg.innerHTML = `غير مطابق: اخترت <strong>${playerBit}</strong>، بينما مرور <strong>${inputBit}</strong> من بوابة <span class="mono">${def.sym}</span> ينتج <strong>${expectedBit}</strong> (<span class="mono">${expectedKet}</span>).`;
+    showFloatingText('خطأ', '#D02670');
+
+    el('wireTrack').classList.remove('wire-shake');
+    void el('wireTrack').offsetWidth;
+    el('wireTrack').classList.add('wire-shake');
+
+    if (lives <= 0) {
+      showEndModal(
+        'انتهت المحاولات المتاحة',
+        `مجموع نقاطك في هذه الجلسة: <strong class="mono" style="color:var(--blue)">${score}</strong> نقطة | أعلى نتيجة مسجلة: <strong class="mono">${bestScore}</strong>`,
+        formulaStr,
+        def.why
+      );
+      return;
+    }
+
+    spawnNextGate();
+  }
+}
+
+function animate(now) {
+  if (!running) return;
+  const dt = Math.min(0.05, (now - lastTime) / 1000);
+  lastTime = now;
+
+  if (!pausedForHint) {
+    const cfg = getLevelConfig();
+    const geo = getTrackGeometry();
+    const pxPerSec = (geo.travelDist / cfg.travelSec) * SPEED_MULTS[speedStep];
+    gateX -= pxPerSec * dt;
+    el('gatePacket').style.left = `${gateX}px`;
+
+    if (gateX <= geo.collideX) {
+      handleGateArrival();
+    }
+  }
+
+  if (running) rafId = requestAnimationFrame(animate);
+}
+
+function startNewGame() {
+  score = 0;
+  levelNum = 1;
+  hitsCount = 0;
+  streak = 0;
+  lives = 3;
+  running = true;
+  pausedForHint = false;
+  setPlayerBit(0);
+  updateBloch('|0⟩', 'تمثيل الحالة الناتجة على الكرة');
+  updateTelemetry();
+  el('endOverlay').classList.add('hidden');
+  el('statusMsg').className = 'status-message';
+  el('statusMsg').innerHTML = 'راقب الرقم الداخل إلى البوابة، ثم اختر <strong>0</strong> أو <strong>1</strong> (الناتج بعد عبور البوابة) قبل وصولها إليك.';
+  spawnNextGate();
+  lastTime = performance.now();
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(animate);
+}
+
+el('hintBtn').addEventListener('click', () => {
+  if (!running || !currentRound) return;
+  pausedForHint = !pausedForHint;
+  const drawer = el('hintDrawer');
+  if (pausedForHint) {
+    drawer.innerHTML = `<strong>تلميح علمي (الحركة متوقفة مؤقتاً):</strong> ${currentRound.def.hint} — اضغط زر «تلميح علمي» مرة أخرى لاستئناف الحركة.`;
+    drawer.classList.remove('hidden');
+  } else {
+    drawer.classList.add('hidden');
+    lastTime = performance.now();
+  }
+});
+
+el('retryBtn').addEventListener('click', startNewGame);
+
+window.addEventListener('resize', () => {
+  if (!running) return;
+  const geo = getTrackGeometry();
+  if (gateX > geo.startX) gateX = geo.startX;
+  el('gatePacket').style.left = `${gateX}px`;
+});
+
+el('startBtn').addEventListener('click', () => {
+  el('startOverlay').classList.add('hidden');
+  startNewGame();
+});
+</script>
+</body>
+</html>
